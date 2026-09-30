@@ -5,6 +5,7 @@ import { Home } from './pages/Home';
 import { Scan } from './pages/Scan';
 import { Study } from './pages/Study';
 import { Paywall } from './pages/Paywall';
+import { Library } from './pages/Library';
 
 function AppContent() {
   const location = useLocation();
@@ -18,7 +19,7 @@ function AppContent() {
           <Route path="/scan" element={<Scan />} />
           <Route path="/study" element={<Study />} />
           <Route path="/paywall" element={<Paywall />} />
-          <Route path="/library" element={<div className="text-center mt-20 text-gray-400">Library under construction</div>} />
+          <Route path="/library" element={<Library />} />
         </Routes>
       </main>
       {!hideNav && <BottomNav />}
