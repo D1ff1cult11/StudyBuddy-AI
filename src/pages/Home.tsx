@@ -1,4 +1,4 @@
-import { Sparkles, Brain, BookOpen, ChevronRight, Zap, Clock, Volume2, VolumeX, Flame } from 'lucide-react';
+import { Sparkles, Brain, BookOpen, ChevronRight, Zap, Clock, Volume2, VolumeX, Flame, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { loadReviews, getDueCards } from '../utils/spaced-repetition';
@@ -163,7 +163,7 @@ export function Home() {
         className="glass-panel" 
         onClick={() => navigate('/quiz')}
         style={{ 
-          padding: '0.9rem 1.1rem', marginBottom: '1.25rem', cursor: 'pointer',
+          padding: '0.9rem 1.1rem', marginBottom: '1rem', cursor: 'pointer',
           display: 'flex', alignItems: 'center', gap: '0.85rem',
           border: '1px solid rgba(16, 185, 129, 0.25)',
           transition: 'all 0.2s'
@@ -175,6 +175,27 @@ export function Home() {
         <div style={{ flex: 1 }}>
           <h3 style={{ fontSize: '0.92rem', marginBottom: '0.1rem' }}>AI Diagnostic Quiz</h3>
           <p style={{ fontSize: '0.76rem', color: 'var(--text-secondary)' }}>Instant multiple-choice test synthesized from your cards</p>
+        </div>
+        <ChevronRight size={18} color="var(--text-muted)" />
+      </section>
+
+      {/* University LMS Hub CTA */}
+      <section 
+        className="glass-panel" 
+        onClick={() => navigate('/lms')}
+        style={{ 
+          padding: '0.9rem 1.1rem', marginBottom: '1.25rem', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: '0.85rem',
+          border: '1px solid rgba(139, 92, 246, 0.25)',
+          transition: 'all 0.2s'
+        }}
+      >
+        <div style={{ padding: '0.55rem', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '0.75rem' }}>
+          <GraduationCap size={20} color="var(--accent-primary)" />
+        </div>
+        <div style={{ flex: 1 }}>
+          <h3 style={{ fontSize: '0.92rem', marginBottom: '0.1rem' }}>Canvas LMS & Blackboard Hub</h3>
+          <p style={{ fontSize: '0.76rem', color: 'var(--text-secondary)' }}>Auto-sync syllabus, readings & gradebook passback</p>
         </div>
         <ChevronRight size={18} color="var(--text-muted)" />
       </section>

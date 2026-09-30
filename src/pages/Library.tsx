@@ -1,4 +1,4 @@
-import { BookOpen, Plus, Trash2, Download, Copy, Check, Play } from 'lucide-react';
+import { BookOpen, Plus, Trash2, Download, Copy, Check, Play, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { sound } from '../utils/audio';
@@ -70,14 +70,24 @@ export function Library() {
             {decks.length} {decks.length === 1 ? 'deck' : 'decks'} saved & ready for active recall
           </p>
         </div>
-        <button
-          className="btn-primary"
-          style={{ padding: '0.55rem 0.95rem', fontSize: '0.85rem' }}
-          onClick={() => navigate('/scan')}
-        >
-          <Plus size={16} />
-          New Deck
-        </button>
+        <div style={{ display: 'flex', gap: '0.4rem' }}>
+          <button
+            className="btn-glass"
+            style={{ padding: '0.55rem 0.8rem', fontSize: '0.82rem' }}
+            onClick={() => navigate('/lms')}
+          >
+            <GraduationCap size={15} />
+            Sync LMS
+          </button>
+          <button
+            className="btn-primary"
+            style={{ padding: '0.55rem 0.85rem', fontSize: '0.82rem' }}
+            onClick={() => navigate('/scan')}
+          >
+            <Plus size={15} />
+            New Deck
+          </button>
+        </div>
       </header>
 
       {decks.length === 0 ? (

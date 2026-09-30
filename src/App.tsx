@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { BottomNav } from './components/BottomNav';
@@ -9,10 +8,12 @@ import { Study } from './pages/Study';
 import { Paywall } from './pages/Paywall';
 import { Library } from './pages/Library';
 import { Quiz } from './pages/Quiz';
+import { Arena } from './pages/Arena';
+import { LMSHub } from './pages/LMSHub';
 
 function AppContent() {
   const location = useLocation();
-  const hideNav = location.pathname === '/study' || location.pathname === '/paywall' || location.pathname === '/quiz';
+  const hideNav = location.pathname === '/study' || location.pathname === '/paywall' || location.pathname === '/quiz' || location.pathname === '/lms';
 
   return (
     <div className="app-container">
@@ -24,6 +25,8 @@ function AppContent() {
           <Route path="/paywall" element={<Paywall />} />
           <Route path="/library" element={<Library />} />
           <Route path="/quiz" element={<Quiz />} />
+          <Route path="/arena" element={<Arena />} />
+          <Route path="/lms" element={<LMSHub />} />
         </Routes>
       </main>
       {!hideNav && <BottomNav />}

@@ -8,9 +8,14 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "record:demo": "node scripts/record_demo.cjs"
+    "record:demo": "node scripts/record_demo.cjs",
+    "cap:sync": "cap sync",
+    "cap:build": "npm run build && cap sync",
+    "cap:add:android": "cap add android",
+    "cap:add:ios": "cap add ios"
   },
   "dependencies": {
+    "@capacitor/core": "^8.5.2",
     "clsx": "^2.1.1",
     "framer-motion": "^13.4.6",
     "lucide-react": "^1.49.0",
@@ -20,6 +25,7 @@
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.2",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",

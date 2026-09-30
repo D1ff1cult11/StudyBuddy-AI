@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, BrainCircuit, RotateCcw, Lightbulb, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { ChevronLeft, BrainCircuit, RotateCcw, Lightbulb, Sparkles, Volume2, VolumeX, Mic, Radio } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Flashcard } from '../utils/ai-agent';
 import { launchConfetti } from '../utils/confetti';
 import { sound } from '../utils/audio';
 import { calculateNextReview, createInitialReview, loadReviews, saveReviews, type ReviewQuality, type CardReview } from '../utils/spaced-repetition';
+import { voiceTutor } from '../utils/voice-agent';
 
 export function Study() {
   const navigate = useNavigate();
@@ -16,6 +17,12 @@ export function Study() {
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [reviews, setReviews] = useState<CardReview[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(sound.isEnabled());
+
+  // Gemini Live Voice Tutor State
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState<'idle' | 'speaking' | 'listening' | 'evaluating'>('idle');
+  const [liveTranscript, setLiveTranscript] = useState('');
+  const [voiceFeedback, setVoiceFeedback] = useState<string | null>(null);
 
   useEffect(() => {
     // Load existing reviews
@@ -104,8 +111,63 @@ export function Study() {
 
     setDirection(quality >= 3 ? 1 : -1);
     setIsFlipped(false);
+    setLiveTranscript('');
+    setVoiceFeedback(null);
     setTimeout(() => setCurrentIndex(prev => prev + 1), 160);
   }, [cards, currentIndex, currentCard, reviews]);
+
+  // Voice Tutor Interactive Flow
+  const startVoiceForCurrentCard = useCallback(async () => {
+    if (!currentCard || !isVoiceMode) return;
+    setVoiceStatus('speaking');
+    setLiveTranscript('');
+    setVoiceFeedback(null);
+    
+    // 1. Speak question aloud
+    await voiceTutor.speak(currentCard.front);
+    
+    // 2. Listen for student's spoken answer
+    setVoiceStatus('listening');
+    try {
+      const studentAnswer = await voiceTutor.listen((interim) => {
+        setLiveTranscript(interim);
+      });
+      
+      setLiveTranscript(studentAnswer);
+      if (studentAnswer.trim()) {
+        setVoiceStatus('evaluating');
+        const evalResult = await voiceTutor.evaluateAnswer(currentCard.front, currentCard.back, studentAnswer);
+        setVoiceFeedback(evalResult.feedback);
+        setIsFlipped(true); // Flip card to show answer
+        
+        // 3. Speak pedagogical feedback aloud
+        setVoiceStatus('speaking');
+        await voiceTutor.speak(evalResult.feedback);
+        
+        // Auto-rate with SM-2 after speaking
+        setTimeout(() => {
+          handleRate(evalResult.isCorrect ? 4 : 2);
+        }, 1600);
+      } else {
+        setVoiceStatus('idle');
+      }
+    } catch {
+      setVoiceStatus('idle');
+    }
+  }, [currentCard, isVoiceMode, handleRate]);
+
+  useEffect(() => {
+    if (isVoiceMode && !completed && currentCard) {
+      startVoiceForCurrentCard();
+    } else {
+      voiceTutor.stopSpeaking();
+      voiceTutor.stopListening();
+    }
+    return () => {
+      voiceTutor.stopSpeaking();
+      voiceTutor.stopListening();
+    };
+  }, [isVoiceMode, currentIndex, completed, startVoiceForCurrentCard, currentCard]);
 
   // Keyboard navigation for power users
   useEffect(() => {
@@ -129,6 +191,17 @@ export function Study() {
   const toggleSound = () => {
     const newState = sound.toggle();
     setSoundEnabled(newState);
+  };
+
+  const toggleVoiceMode = () => {
+    const next = !isVoiceMode;
+    setIsVoiceMode(next);
+    sound.playFlip();
+    if (!next) {
+      voiceTutor.stopSpeaking();
+      voiceTutor.stopListening();
+      setVoiceStatus('idle');
+    }
   };
 
   const variants = {
@@ -203,10 +276,69 @@ export function Study() {
             )}
           </div>
         </div>
+
+        {/* Gemini Live Voice Tutor Toggle */}
+        <button 
+          onClick={toggleVoiceMode} 
+          style={{ 
+            background: isVoiceMode ? 'var(--accent-gradient)' : 'rgba(255,255,255,0.06)', 
+            border: isVoiceMode ? 'none' : '1px solid rgba(255,255,255,0.1)', 
+            borderRadius: '2rem', 
+            padding: '0.35rem 0.65rem', 
+            color: 'white', 
+            cursor: 'pointer', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.3rem',
+            fontSize: '0.72rem',
+            fontWeight: 700,
+            fontFamily: 'Outfit, sans-serif',
+            boxShadow: isVoiceMode ? '0 0 16px rgba(217, 70, 239, 0.4)' : 'none'
+          }}
+          title="Toggle Gemini Live Voice Tutor"
+        >
+          {isVoiceMode ? <Radio size={14} className="animate-pulse" /> : <Mic size={14} />}
+          <span>Live AI</span>
+        </button>
+
         <button onClick={toggleSound} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}>
           {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
         </button>
       </header>
+
+      {/* Voice Mode Live Status Banner */}
+      {isVoiceMode && (
+        <div style={{
+          background: 'rgba(217, 70, 239, 0.12)',
+          border: '1px solid rgba(217, 70, 239, 0.3)',
+          borderRadius: '0.75rem',
+          padding: '0.65rem 0.9rem',
+          marginBottom: '1rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.6rem'
+        }}>
+          <div style={{
+            width: '10px', height: '10px', borderRadius: '50%',
+            background: voiceStatus === 'listening' ? '#ef4444' : voiceStatus === 'evaluating' ? '#f59e0b' : '#10b981',
+            boxShadow: `0 0 10px ${voiceStatus === 'listening' ? '#ef4444' : '#10b981'}`,
+            animation: 'pulse-glow 1s infinite'
+          }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--accent-secondary)' }}>
+              {voiceStatus === 'speaking' && "AI Tutor is speaking..."}
+              {voiceStatus === 'listening' && "Listening... Speak your answer now"}
+              {voiceStatus === 'evaluating' && "Gemini is evaluating your recall..."}
+              {voiceStatus === 'idle' && "Hands-free voice tutor ready"}
+            </span>
+            {liveTranscript && (
+              <p style={{ fontSize: '0.74rem', color: 'var(--text-primary)', margin: '0.15rem 0 0', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                "{liveTranscript}"
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 3D Card Flip Perspective Box */}
       <div style={{ flex: 1, position: 'relative', perspective: '1200px' }}>
@@ -252,7 +384,7 @@ export function Study() {
                 </h3>
 
                 <p style={{ position: 'absolute', bottom: '1.25rem', color: 'var(--text-muted)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                  Tap card or press Space to reveal
+                  {isVoiceMode ? "Speak your answer or tap to flip" : "Tap card or press Space to reveal"}
                 </p>
               </div>
 
@@ -276,6 +408,22 @@ export function Study() {
                 <h3 style={{ fontSize: '1.2rem', lineHeight: 1.55, color: 'var(--text-primary)', marginBottom: '1.25rem', fontWeight: 500 }}>
                   {currentCard.back}
                 </h3>
+
+                {/* Socratic Voice Evaluation Feedback */}
+                {voiceFeedback && (
+                  <div style={{
+                    background: 'rgba(16, 185, 129, 0.12)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    borderRadius: '0.75rem',
+                    padding: '0.55rem 0.85rem',
+                    marginBottom: '0.75rem',
+                    maxWidth: '90%'
+                  }}>
+                    <p style={{ fontSize: '0.76rem', color: '#10b981', margin: 0, fontWeight: 600 }}>
+                      🎙️ Socratic Feedback: {voiceFeedback}
+                    </p>
+                  </div>
+                )}
 
                 {/* Pedagogical Mnemonic Hook */}
                 {currentCard.mnemonic && (

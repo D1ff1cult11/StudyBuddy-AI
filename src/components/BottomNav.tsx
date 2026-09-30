@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Camera, Library } from 'lucide-react';
+import { Home, Camera, Library, Trophy } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -15,8 +15,16 @@ export function BottomNav() {
         className={({ isActive }) => cn("nav-item", isActive && "active")}
         end
       >
-        <Home size={24} />
+        <Home size={22} />
         <span>Home</span>
+      </NavLink>
+
+      <NavLink 
+        to="/arena" 
+        className={({ isActive }) => cn("nav-item", isActive && "active")}
+      >
+        <Trophy size={22} />
+        <span>Arena</span>
       </NavLink>
       
       <NavLink 
@@ -24,16 +32,16 @@ export function BottomNav() {
         className={({ isActive }) => cn("nav-item scan-btn", isActive && "active")}
       >
         <div className="scan-btn-icon">
-          <Camera size={26} color="white" />
+          <Camera size={24} color="white" />
         </div>
-        <span style={{ marginTop: '4px' }}>Scan</span>
+        <span style={{ marginTop: '2px' }}>Scan</span>
       </NavLink>
       
       <NavLink 
         to="/library" 
         className={({ isActive }) => cn("nav-item", isActive && "active")}
       >
-        <Library size={24} />
+        <Library size={22} />
         <span>Library</span>
       </NavLink>
     </nav>
