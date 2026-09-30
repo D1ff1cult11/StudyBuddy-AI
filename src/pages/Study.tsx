@@ -1,0 +1,145 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, BrainCircuit, Check, X, RotateCcw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+const MOCK_CARDS = [
+  { id: 1, front: "What is the primary function of mitochondria?", back: "To generate most of the chemical energy needed to power the cell's biochemical reactions (ATP production)." },
+  { id: 2, front: "What is the difference between rough and smooth ER?", back: "Rough ER has ribosomes on its surface and makes proteins. Smooth ER lacks ribosomes and synthesizes lipids." },
+  { id: 3, front: "What is the role of the Golgi apparatus?", back: "It processes, packages, and sorts proteins and lipids for transport to their final destinations." },
+];
+
+export function Study() {
+  const navigate = useNavigate();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [direction, setDirection] = useState(0);
+  const [completed, setCompleted] = useState(false);
+
+  const currentCard = MOCK_CARDS[currentIndex];
+
+  const handleNext = (isCorrect: boolean) => {
+    if (currentIndex === MOCK_CARDS.length - 1) {
+      setCompleted(true);
+      return;
+    }
+    
+    setDirection(isCorrect ? 1 : -1);
+    setIsFlipped(false);
+    setTimeout(() => setCurrentIndex(prev => prev + 1), 150);
+  };
+
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 300 : -300,
+      opacity: 0,
+      scale: 0.9,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+      scale: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 300 : -300,
+      opacity: 0,
+      scale: 0.9,
+    })
+  };
+
+  if (completed) {
+    return (
+      <div className="animate-slide-up" style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2rem' }}>
+        <BrainCircuit size={80} color="var(--accent-secondary)" />
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }} className="text-gradient">Deck Completed!</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>You mastered {MOCK_CARDS.length} concepts.</p>
+        </div>
+        <button className="btn-primary" onClick={() => navigate('/')}>
+          <RotateCcw size={18} />
+          Back to Home
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+        <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
+          <ChevronLeft size={28} />
+        </button>
+        <div style={{ flex: 1 }}>
+          <div style={{ background: 'var(--bg-glass)', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${((currentIndex) / MOCK_CARDS.length) * 100}%`, background: 'var(--accent-gradient)', transition: 'width 0.3s' }} />
+          </div>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem', textAlign: 'center' }}>
+            Card {currentIndex + 1} of {MOCK_CARDS.length}
+          </p>
+        </div>
+      </header>
+
+      <div style={{ flex: 1, position: 'relative', perspective: '1000px' }}>
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={currentIndex}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            style={{ width: '100%', height: '100%', position: 'absolute' }}
+            onClick={() => setIsFlipped(!isFlipped)}
+          >
+            <motion.div
+              style={{
+                width: '100%', height: '100%',
+                position: 'relative',
+                transformStyle: 'preserve-3d',
+              }}
+              animate={{ rotateY: isFlipped ? 180 : 0 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            >
+              {/* Front */}
+              <div className="glass-panel" style={{
+                position: 'absolute', width: '100%', height: '100%',
+                backfaceVisibility: 'hidden',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: '2rem', textAlign: 'center', cursor: 'pointer'
+              }}>
+                <h3 style={{ fontSize: '1.5rem', lineHeight: 1.4 }}>{currentCard.front}</h3>
+                <p style={{ position: 'absolute', bottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>Tap to flip</p>
+              </div>
+
+              {/* Back */}
+              <div className="glass-panel" style={{
+                position: 'absolute', width: '100%', height: '100%',
+                backfaceVisibility: 'hidden',
+                transform: 'rotateY(180deg)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                padding: '2rem', textAlign: 'center',
+                border: '1px solid rgba(217, 70, 239, 0.3)'
+              }}>
+                <h3 style={{ fontSize: '1.25rem', lineHeight: 1.5, color: 'var(--text-primary)' }}>{currentCard.back}</h3>
+              </div>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', opacity: isFlipped ? 1 : 0, transition: 'opacity 0.3s', pointerEvents: isFlipped ? 'auto' : 'none' }}>
+        <button className="glass-panel" style={{ flex: 1, padding: '1rem', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }} onClick={() => handleNext(false)}>
+          <X size={20} />
+          Need Review
+        </button>
+        <button className="glass-panel" style={{ flex: 1, padding: '1rem', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#10b981', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }} onClick={() => handleNext(true)}>
+          <Check size={20} />
+          Got it
+        </button>
+      </div>
+    </div>
+  );
+}
