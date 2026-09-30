@@ -1,25 +1,29 @@
 import { useState } from 'react';
-import { Camera, Image as ImageIcon, Loader2, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Camera, Image as ImageIcon, Loader2, CheckCircle2, ArrowRight, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { studyAgent } from '../utils/ai-agent';
 
 export function Scan() {
   const navigate = useNavigate();
   const [step, setStep] = useState<'idle' | 'scanning' | 'processing' | 'success'>('idle');
+  const [inputText, setInputText] = useState('');
+  const [generatedCount, setGeneratedCount] = useState(0);
+  const [mode, setMode] = useState<'camera' | 'paste'>('camera');
 
-  const handleScan = async () => {
-    setStep('scanning');
+  const handleScan = async (text?: string) => {
+    const ocrText = text || "The mitochondria is the powerhouse of the cell. It generates ATP through cellular respiration. The rough endoplasmic reticulum has ribosomes and produces proteins. The Golgi apparatus packages and sorts proteins.";
     
-    // Simulate camera shutter/scan delay
+    setStep('scanning');
+
     setTimeout(async () => {
       setStep('processing');
       try {
-        // Use the ECC-principled AI Agent (Scrubs PII internally)
-        const mockOcrText = "Student Name: John Doe. Email: john@example.com. Notes: Mitochondria generates ATP.";
-        await studyAgent.generateFlashcards(mockOcrText);
+        const cards = await studyAgent.generateFlashcards(ocrText);
+        setGeneratedCount(cards.length);
         setStep('success');
       } catch (e) {
         console.error(e);
+        setStep('idle');
       }
     }, 1500);
   };
@@ -35,16 +39,70 @@ export function Scan() {
         
         {step === 'idle' && (
           <>
-            <div className="glass-panel" style={{ width: '100%', aspectRatio: '3/4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '2px dashed var(--border-focus)', cursor: 'pointer', gap: '1rem' }} onClick={handleScan}>
-              <div style={{ padding: '1.5rem', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '50%' }}>
-                <Camera size={48} color="var(--accent-primary)" />
-              </div>
-              <p style={{ fontWeight: 500, fontSize: '1.1rem' }}>Tap to capture notes</p>
+            {/* Mode Toggle */}
+            <div style={{ display: 'flex', gap: '0.5rem', background: 'var(--bg-glass)', borderRadius: 'var(--radius-full)', padding: '4px' }}>
+              <button 
+                onClick={() => setMode('camera')}
+                style={{ 
+                  padding: '0.5rem 1rem', borderRadius: 'var(--radius-full)', border: 'none', cursor: 'pointer', fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '0.85rem',
+                  background: mode === 'camera' ? 'var(--accent-gradient)' : 'transparent', 
+                  color: mode === 'camera' ? 'white' : 'var(--text-secondary)',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <Camera size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Camera
+              </button>
+              <button 
+                onClick={() => setMode('paste')}
+                style={{ 
+                  padding: '0.5rem 1rem', borderRadius: 'var(--radius-full)', border: 'none', cursor: 'pointer', fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '0.85rem',
+                  background: mode === 'paste' ? 'var(--accent-gradient)' : 'transparent', 
+                  color: mode === 'paste' ? 'white' : 'var(--text-secondary)',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <FileText size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Paste Text
+              </button>
             </div>
-            
-            <button className="btn-glass" style={{ width: '100%' }}>
+
+            {mode === 'camera' ? (
+              <>
+                <div className="glass-panel" style={{ width: '100%', aspectRatio: '3/4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '2px dashed var(--border-focus)', cursor: 'pointer', gap: '1rem' }} onClick={() => handleScan()}>
+                  <div style={{ padding: '1.5rem', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '50%' }}>
+                    <Camera size={48} color="var(--accent-primary)" />
+                  </div>
+                  <p style={{ fontWeight: 500, fontSize: '1.1rem' }}>Tap to capture notes</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <textarea
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  placeholder="Paste or type your notes here...&#10;&#10;Example: The mitochondria is the powerhouse of the cell. It generates ATP through cellular respiration."
+                  style={{
+                    width: '100%', minHeight: '200px', padding: '1rem',
+                    background: 'var(--bg-glass)', color: 'var(--text-primary)',
+                    border: '1px solid var(--border-focus)', borderRadius: 'var(--radius-md)',
+                    fontFamily: 'Outfit, sans-serif', fontSize: '0.95rem', lineHeight: 1.6,
+                    resize: 'vertical', outline: 'none'
+                  }}
+                />
+                <button 
+                  className="btn-primary" 
+                  style={{ width: '100%' }} 
+                  onClick={() => handleScan(inputText)}
+                  disabled={inputText.trim().length < 10}
+                >
+                  <ImageIcon size={18} />
+                  Generate Flashcards with AI
+                </button>
+              </>
+            )}
+
+            <button className="btn-glass" style={{ width: '100%' }} onClick={() => setMode(mode === 'camera' ? 'paste' : 'camera')}>
               <ImageIcon size={20} />
-              Choose from Gallery
+              {mode === 'camera' ? 'Or paste text instead' : 'Or use camera'}
             </button>
           </>
         )}
@@ -74,13 +132,13 @@ export function Scan() {
             <CheckCircle2 size={80} color="#10b981" />
             <div style={{ textAlign: 'center' }}>
               <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Success!</h3>
-              <p style={{ color: 'var(--text-secondary)' }}>Generated 14 flashcards from your notes.</p>
+              <p style={{ color: 'var(--text-secondary)' }}>Generated {generatedCount} flashcards from your notes.</p>
             </div>
             
             <div className="glass-panel" style={{ width: '100%', padding: '1.5rem', marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <h4 style={{ fontSize: '1.1rem', marginBottom: '0.25rem' }}>Biology: Cell Structure</h4>
-                <p style={{ fontSize: '0.9rem', color: 'var(--accent-primary)' }}>14 new cards added</p>
+                <h4 style={{ fontSize: '1.1rem', marginBottom: '0.25rem' }}>New Study Deck</h4>
+                <p style={{ fontSize: '0.9rem', color: 'var(--accent-primary)' }}>{generatedCount} new cards added</p>
               </div>
               <button className="btn-primary" style={{ padding: '0.75rem 1rem' }} onClick={() => navigate('/study')}>
                 Study
