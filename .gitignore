@@ -109,3 +109,6 @@ assets/images/security/badrudi-exploit.mp4
 .aider*
 demo_recording/
 *.webm
+*.mp4
+*.mp3
+*.wav
