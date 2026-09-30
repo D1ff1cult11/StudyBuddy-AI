@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, BrainCircuit, Check, X, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Flashcard } from '../utils/ai-agent';
+import { launchConfetti } from '../utils/confetti';
 
 export function Study() {
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ export function Study() {
   const handleNext = (isCorrect: boolean) => {
     if (currentIndex === cards.length - 1) {
       setCompleted(true);
+      launchConfetti();
       return;
     }
     

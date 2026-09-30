@@ -63,6 +63,27 @@ export function Home() {
         </div>
       </section>
 
+      {/* Quiz Mode CTA */}
+      <section 
+        className="glass-panel" 
+        onClick={() => navigate('/quiz')}
+        style={{ 
+          padding: '1rem 1.25rem', marginBottom: '1.5rem', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: '1rem',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
+          transition: 'all 0.2s'
+        }}
+      >
+        <div style={{ padding: '0.6rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '0.75rem' }}>
+          <Brain size={22} color="#10b981" />
+        </div>
+        <div style={{ flex: 1 }}>
+          <h3 style={{ fontSize: '0.95rem', marginBottom: '0.1rem' }}>Quiz Mode</h3>
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Test yourself with AI-generated questions</p>
+        </div>
+        <ChevronRight size={18} color="var(--text-muted)" />
+      </section>
+
       {/* Stats */}
       <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
         <div className="glass-panel" style={{ flex: 1, padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
