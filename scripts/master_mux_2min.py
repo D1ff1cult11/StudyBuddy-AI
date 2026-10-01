@@ -46,19 +46,20 @@ def run():
     print(f"Voice Duration : {voice_dur:.2f}s ({voice_dur/60:.2f} min)")
     print(f"Music Duration : {bg_dur:.2f}s")
 
-    # Natural unhurried tempo:
-    # 1.5s intro delay for voiceover
-    target_voice_dur = max(10.0, vid_dur - 4.5)
+    # Calibrated for exactly 1:55 (115.0s) duration requested by user
+    TARGET_DURATION = 115.00
+    target_voice_dur = TARGET_DURATION - 4.5
     tempo_ratio = voice_dur / target_voice_dur
-    # Keep tempo natural and slightly slower as requested
-    tempo = max(0.92, min(1.08, tempo_ratio))
+    tempo = max(0.92, min(1.10, tempo_ratio))
 
-    fade_out_start = max(1.0, vid_dur - 4.0)
+    fade_out_start = TARGET_DURATION - 4.5
 
+    print(f"Target Video Duration : {TARGET_DURATION:.2f}s (1:55)")
     print(f"Voice tempo adjustment: {tempo:.4f}")
-    print(f"Music fade out start : {fade_out_start:.2f}s")
+    print(f"Music fade out start  : {fade_out_start:.2f}s")
 
     filter_complex = (
+        f"[0:v]tpad=stop_mode=clone:stop_duration=20,trim=duration={TARGET_DURATION:.2f},setpts=PTS-STARTPTS[vout];"
         f"[1:a]adelay=1500|1500,atempo={tempo:.4f},volume=1.20[voice];"
         f"[2:a]volume=0.13,afade=t=in:st=0:d=2.0,afade=t=out:st={fade_out_start:.2f}:d=4.0[bg];"
         f"[voice][bg]amix=inputs=2:duration=first:dropout_transition=2[aout]"
@@ -70,7 +71,7 @@ def run():
         "-i", voice_file,
         "-i", bg_music_file,
         "-filter_complex", filter_complex,
-        "-map", "0:v",
+        "-map", "[vout]",
         "-map", "[aout]",
         "-c:v", "libx264",
         "-pix_fmt", "yuv420p",
@@ -79,7 +80,7 @@ def run():
         "-c:a", "aac",
         "-b:a", "192k",
         "-ar", "44100",
-        "-t", f"{vid_dur:.2f}",
+        "-t", f"{TARGET_DURATION:.2f}",
         output_mp4_local,
         "-y"
     ]

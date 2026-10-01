@@ -6,27 +6,24 @@ import requests
 
 # 2-Minute Investor & Hackathon Pitch Script (Measured, Unhurried, Story-Driven Cadence)
 SCRIPT_TEXT = (
-    "Every semester, millions of university students drown in hundreds of pages of lecture notes, "
-    "only to forget seventy percent within twenty-four hours due to the Ebbinghaus forgetting curve. "
-    "StudyBuddy AI transforms this painful cycle forever. "
-    "From first launch, StudyBuddy guides students through an effortless three-step onboarding flow, "
-    "establishing client-side privacy where all notes are scrubbed of personal data before AI processing. "
-    "The Home dashboard acts as your personal learning copilot, displaying active retention streaks, "
-    "mastery analytics, and intelligent review cues calibrated by the SuperMemo SM-two algorithm. "
-    "With Magic Scan, simply snap messy handwritten notes or paste lecture transcripts. "
-    "In seconds, Gemini one point five Flash analyzes the material, synthesizing atomic active-recall flashcards "
-    "complete with mnemonic memory hooks. "
-    "In Study Mode, physics-based 3D cards test your recall with spatial flips and audio micro-haptics. "
-    "Four scientific rating tiers dynamically schedule your optimal next review interval right before memory decay occurs. "
-    "And now, introducing our all-new Gemini Live Hands-Free Voice Tutor. "
-    "Students can practice verbally while walking to class; StudyBuddy listens, evaluates conceptual accuracy in real-time, "
-    "and responds with spoken Socratic coaching. "
-    "For academic workflows, our University LMS Hub connects directly to Canvas and Blackboard via certified LTI one point three. "
-    "Import course readings with one tap, and seamlessly pass back quiz grades to your institution's gradebook. "
-    "Need focus? Enter the Study Arena: join synchronized Pomodoro sprints with peers worldwide, "
-    "challenge classmates to recall duels, and climb global university leaderboards. "
-    "Export your decks cleanly to Anki and Obsidian, or unlock unlimited scans with RevenueCat Pro. "
-    "StudyBuddy AI: study smarter, retain longer, and excel faster. Welcome to the future of learning."
+    "Every semester, university students drown in hundreds of pages of lecture notes, "
+    "forgetting seventy percent within twenty-four hours due to the Ebbinghaus forgetting curve. "
+    "Built by a nineteen-year-old student developer from India, StudyBuddy AI transforms this cycle forever. "
+    "From first launch, our privacy shield scrubs personal data client-side before any AI processing. "
+    "The Home dashboard acts as your learning copilot, displaying retention streaks, "
+    "mastery analytics, and review cues calibrated by the SuperMemo SM-two algorithm. "
+    "With Magic Scan, simply snap messy handwritten notes or paste transcripts. "
+    "In seconds, Gemini one point five Flash extracts atomic active-recall flashcards with mnemonic memory hooks. "
+    "In Study Mode, physics-based 3D cards test recall with spatial flips and audio micro-haptics, "
+    "while four SM-two rating tiers schedule your optimal review right before memory decay occurs. "
+    "Our new Gemini Live Hands-Free Voice Tutor allows students to study aloud on the go, "
+    "providing instant Socratic audio feedback. "
+    "For academia, our University LMS Hub connects directly to Canvas and Blackboard via LTI one point three, "
+    "auto-syncing syllabi and passing back grades to your institution's gradebook. "
+    "Ready for focus? The Study Arena hosts synchronized Pomodoro sprints with peers worldwide "
+    "and global campus leaderboards. "
+    "Export cleanly to Anki and Markdown, or unlock unlimited scans and our fifty percent off Next Gen Student Pass powered by RevenueCat. "
+    "StudyBuddy AI: study smarter, retain longer, and excel faster."
 )
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -36,7 +33,7 @@ ELEVENLABS_KEY = os.getenv("ELEVENLABS_API_KEY", sys.argv[1] if len(sys.argv) > 
 VOICE_ID = "pNInz6obpgDQGcFmaJgB"  # Adam
 
 def try_elevenlabs():
-    print(f"Attempting ElevenLabs synthesis ({len(SCRIPT_TEXT)} characters, slower pacing)...")
+    print(f"Attempting ElevenLabs synthesis ({len(SCRIPT_TEXT)} characters, calibrated 1:55 cadence)...")
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
     headers = {
         "Accept": "audio/mpeg",
@@ -47,9 +44,9 @@ def try_elevenlabs():
         "text": SCRIPT_TEXT,
         "model_id": "eleven_turbo_v2_5",
         "voice_settings": {
-            "stability": 0.65,
+            "stability": 0.58,
             "similarity_boost": 0.85,
-            "speed": 0.94  # slightly slower, relaxed, authoritative pitch cadence
+            "speed": 1.05
         }
     }
     resp = requests.post(url, json=payload, headers=headers)
