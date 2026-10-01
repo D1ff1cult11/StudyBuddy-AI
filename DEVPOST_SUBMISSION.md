@@ -79,11 +79,12 @@ Monetization is the lifeblood of sustainable software. StudyBuddy AI integrates 
 
 - **Frontend & App Core**: React 19, TypeScript, Vite — ultra-responsive mobile SPA architecture.
 - **Design System**: Premium dark-mode glassmorphism, Outfit typography, HSL tailored color palette, and micro-haptic Web Audio sounds.
-- **Testing & Quality (TDD)**: **32 unit tests passing in Vitest** covering:
+- **Testing & Quality (TDD)**: **36 unit tests passing across 5 test suites in Vitest** covering:
   - SuperMemo SM-2 mathematical correctness (interval growth, EF floor bounds, reset logic)
   - PII scrubbing security (Indian +91 phone numbers, international formats, emails, SSNs)
   - RevenueCat entitlement validation and fallback handling
   - Supabase Realtime presence and broadcast handlers
+  - Utility class composition and Tailwind conflict resolution
 - **AI & Multimodal**: Google Gemini 1.5 Flash API with strict structured JSON schema outputs.
 - **Voice Intelligence**: Browser-native Web Speech API (SpeechRecognition + SpeechSynthesis) paired with Gemini evaluation prompts.
 - **Sound Engine**: 0-dependency Web Audio API procedural synthesis generating 4 custom acoustic profiles (flip, success, streak, click) using oscillator math.
@@ -132,6 +133,6 @@ React 19 · TypeScript · Vite · Vitest · RevenueCat (`@revenuecat/purchases-j
 
 - **Devpost Project Name**: StudyBuddy AI — Voice Tutor, SM-2 & RevenueCat Pro
 - **GitHub Repository**: https://github.com/D1ff1cult11/StudyBuddy-AI
-- **Demo Video Link**: [Paste your Loom / YouTube demo video link]
-- **Live Demo Link**: [Paste your Vercel deployment URL]
+- **Live Demo Link**: https://studybuddy-ai.vercel.app/
+- **Demo Video File**: `studybuddy_2min_pitch_master.mp4` (Duration: `00:01:54.96`, strictly under 2 min)
 - **Thumbnail Image**: `devpost_thumbnail_3x2.jpg` (included in project root)
