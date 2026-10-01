@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Snap messy lecture notes → AI flashcards with Gemini Live voice tutoring, SuperMemo SM-2 spaced repetition, Canvas LMS sync, and RevenueCat Pro monetization.</strong><br>
-  <em>Built by a 19-year-old student builder from India for the <strong>RevenueCat Ship-a-ton 2026 (Next Gen Award)</strong>.</em>
+  <em>Built by two 19-year-old student builders from India for the <strong>RevenueCat Ship-a-ton 2026 (Next Gen Award)</strong>.</em>
 </p>
 
 <p align="center">
@@ -21,7 +21,7 @@
   <a href="#-the-mission--next-gen-story">The Story</a> •
   <a href="#-10-production-modules">Features</a> •
   <a href="#-revenuecat-monetization-architecture">RevenueCat Architecture</a> •
-  <a href="#-rigorous-automated-testing-32--32-passing">Testing</a> •
+  <a href="#-rigorous-automated-testing-36--36-passing">Testing</a> •
   <a href="#-quick-start">Quick Start</a> •
   <a href="./DEVPOST_SUBMISSION.md">Devpost Pitch Copy</a>
 </p>
@@ -30,7 +30,7 @@
 
 ## 🎯 The Mission & Next Gen Story
 
-As a **19-year-old student developer from India**, college life means managing massive syllabi, hundreds of lecture slides, and high-pressure exams. Watching classmates pull 3:00 AM all-nighters rereading textbooks only to suffer the brutal **70% 24-hour decay of the Ebbinghaus Forgetting Curve**, I decided to engineer a true learning operating system.
+As **two 19-year-old student developers from India**, college life means managing massive syllabi, hundreds of lecture slides, and high-pressure exams. Watching classmates pull 3:00 AM all-nighters rereading textbooks only to suffer the brutal **70% 24-hour decay of the Ebbinghaus Forgetting Curve**, we decided to engineer a true learning operating system.
 
 **StudyBuddy AI** bridges cognitive learning science (SuperMemo SM-2), on-device privacy (PII scrubbing), real-time conversational voice tutoring, and sustainable, student-friendly monetization powered by **RevenueCat** with Purchasing Power Parity (₹999/yr in India vs $29.99/yr globally).
 
