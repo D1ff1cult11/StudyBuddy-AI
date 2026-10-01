@@ -178,3 +178,22 @@ export async function restorePurchases(): Promise<ProStatus> {
 export function isRealMode(): boolean {
   return configured;
 }
+
+/**
+ * Set custom student attributes in RevenueCat (e.g., university, country, age, student eligibility).
+ * Demonstrates advanced RevenueCat subscriber analytics and demographic cohort tracking.
+ */
+export async function setStudentAttributes(attributes: Record<string, string>): Promise<void> {
+  localStorage.setItem('studybuddy_student_attributes', JSON.stringify(attributes));
+  if (!configured || !purchasesInstance) {
+    return;
+  }
+
+  try {
+    if (typeof (purchasesInstance as any).setAttributes === 'function') {
+      await (purchasesInstance as any).setAttributes(attributes);
+    }
+  } catch (e) {
+    console.warn('[RevenueCat] Could not set attributes:', e);
+  }
+}

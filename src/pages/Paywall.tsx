@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Crown, CheckCircle2, Zap, ChevronLeft, Shield, Infinity, Brain, RotateCcw, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { purchasePackage, restorePurchases, checkProStatus, isRealMode } from '../utils/revenuecat';
+import { purchasePackage, restorePurchases, checkProStatus, isRealMode, setStudentAttributes } from '../utils/revenuecat';
 import { sound } from '../utils/audio';
 
 export function Paywall({ onClose }: { onClose?: () => void }) {
@@ -11,6 +11,7 @@ export function Paywall({ onClose }: { onClose?: () => void }) {
   const [restoring, setRestoring] = useState(false);
   const [isPro, setIsPro] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
+  const [showComparison, setShowComparison] = useState(false);
 
   useEffect(() => {
     checkProStatus().then((status) => {
@@ -24,6 +25,14 @@ export function Paywall({ onClose }: { onClose?: () => void }) {
     setFeedbackMsg(null);
 
     try {
+      await setStudentAttributes({
+        country: 'India',
+        age: '19',
+        plan_selected: selectedPlan,
+        currency_ppp: selectedPlan === 'student' ? 'INR_999' : 'USD_29.99',
+        student_cohort: 'NextGen2026',
+      });
+
       const pkg = {
         identifier: selectedPlan === 'student' ? '$rc_student_annual' : '$rc_annual',
         product: {
@@ -228,6 +237,55 @@ export function Paywall({ onClose }: { onClose?: () => void }) {
             </div>
           </div>
         </div>
+
+        {/* Free vs Pro Comparison Toggle */}
+        <div style={{ textAlign: 'center', marginTop: '0.2rem' }}>
+          <button
+            onClick={() => { setShowComparison(prev => !prev); sound.playFlip(); }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--accent-primary)',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              padding: '0.3rem'
+            }}
+          >
+            {showComparison ? 'Hide Plan Comparison' : 'Compare Free vs. Pro Features'}
+          </button>
+        </div>
+
+        {showComparison && (
+          <div className="glass-panel animate-slide-up" style={{ padding: '0.85rem 1rem', fontSize: '0.78rem' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-secondary)' }}>
+                  <th style={{ padding: '0.4rem 0.2rem' }}>Feature</th>
+                  <th style={{ padding: '0.4rem 0.2rem', textAlign: 'center' }}>Free</th>
+                  <th style={{ padding: '0.4rem 0.2rem', textAlign: 'center', color: 'var(--accent-primary)', fontWeight: 700 }}>Pro Pass</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { name: 'AI Note Scans', free: '3 Scans', pro: 'Unlimited' },
+                  { name: 'Gemini Voice Tutor', free: 'Disabled', pro: 'Conversational' },
+                  { name: 'SM-2 Memory Scheduling', free: 'Standard', pro: 'Dynamic Ease Factor' },
+                  { name: 'Canvas & Blackboard Sync', free: '1 Module', pro: 'Unlimited Two-Way' },
+                  { name: 'Collaborative Arena', free: 'Solo', pro: 'Live Peer Match' },
+                  { name: 'Client-side PII Scrubbing', free: 'Included', pro: 'Included' },
+                ].map((row, idx) => (
+                  <tr key={idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <td style={{ padding: '0.45rem 0.2rem', color: 'var(--text-primary)', fontWeight: 500 }}>{row.name}</td>
+                    <td style={{ padding: '0.45rem 0.2rem', textAlign: 'center', color: 'var(--text-muted)' }}>{row.free}</td>
+                    <td style={{ padding: '0.45rem 0.2rem', textAlign: 'center', color: 'var(--accent-primary)', fontWeight: 700 }}>{row.pro}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* CTA Button */}
         <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
