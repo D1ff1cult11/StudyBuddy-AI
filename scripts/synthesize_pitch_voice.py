@@ -4,39 +4,39 @@ import asyncio
 import edge_tts
 import requests
 
-# 90-Second Investor & Hackathon Pitch Script
+# 2-Minute Investor & Hackathon Pitch Script (Measured, Unhurried, Story-Driven Cadence)
 SCRIPT_TEXT = (
-    "Every semester, millions of students drown in hundreds of pages of lecture notes, "
+    "Every semester, millions of university students drown in hundreds of pages of lecture notes, "
     "only to forget seventy percent within twenty-four hours due to the Ebbinghaus forgetting curve. "
     "StudyBuddy AI transforms this painful cycle forever. "
-    "From first launch, StudyBuddy guides students through an effortless onboarding flow, "
+    "From first launch, StudyBuddy guides students through an effortless three-step onboarding flow, "
     "establishing client-side privacy where all notes are scrubbed of personal data before AI processing. "
-    "The Home dashboard acts as your personal learning copilot, displaying real-time retention streaks, "
+    "The Home dashboard acts as your personal learning copilot, displaying active retention streaks, "
     "mastery analytics, and intelligent review cues calibrated by the SuperMemo SM-two algorithm. "
     "With Magic Scan, simply snap messy handwritten notes or paste lecture transcripts. "
     "In seconds, Gemini one point five Flash analyzes the material, synthesizing atomic active-recall flashcards "
     "complete with mnemonic memory hooks. "
-    "In Study Mode, physics-based three-D cards test memory with spatial flips and audio micro-haptics. "
-    "Four scientific rating tiers dynamically schedule your optimal next review interval right before memory decay. "
+    "In Study Mode, physics-based 3D cards test your recall with spatial flips and audio micro-haptics. "
+    "Four scientific rating tiers dynamically schedule your optimal next review interval right before memory decay occurs. "
     "And now, introducing our all-new Gemini Live Hands-Free Voice Tutor. "
-    "Students can practice verbally while walking to class; StudyBuddy listens, evaluates answers Socratically in real-time, "
-    "and responds with audio coaching. "
+    "Students can practice verbally while walking to class; StudyBuddy listens, evaluates conceptual accuracy in real-time, "
+    "and responds with spoken Socratic coaching. "
     "For academic workflows, our University LMS Hub connects directly to Canvas and Blackboard via certified LTI one point three. "
-    "Import syllabi and course readings with one tap, and seamlessly pass back quiz grades to your institution's gradebook. "
-    "Need focus? Enter the Study Arena: join synchronized Pomodoro sprints with classmates worldwide, "
-    "challenge peers to real-time recall duels, and climb global university leaderboards. "
-    "Export seamlessly to Anki or Obsidian, or unlock unlimited scans with our RevenueCat Pro tier. "
-    "StudyBuddy AI: study smarter, retain longer, excel faster."
+    "Import course readings with one tap, and seamlessly pass back quiz grades to your institution's gradebook. "
+    "Need focus? Enter the Study Arena: join synchronized Pomodoro sprints with peers worldwide, "
+    "challenge classmates to recall duels, and climb global university leaderboards. "
+    "Export your decks cleanly to Anki and Obsidian, or unlock unlimited scans with RevenueCat Pro. "
+    "StudyBuddy AI: study smarter, retain longer, and excel faster. Welcome to the future of learning."
 )
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-OUTPUT_VOICE = os.path.join(BASE_DIR, "voiceover_90s.mp3")
+OUTPUT_VOICE = os.path.join(BASE_DIR, "elevenlabs_voiceover.mp3")
 
-ELEVENLABS_KEY = os.getenv("ELEVENLABS_API_KEY", sys.argv[1] if len(sys.argv) > 1 else "")
+ELEVENLABS_KEY = os.getenv("ELEVENLABS_API_KEY", sys.argv[1] if len(sys.argv) > 1 else "sk_74576e204ce75a17a554ed3174f5ad6408dc718979812f6d")
 VOICE_ID = "pNInz6obpgDQGcFmaJgB"  # Adam
 
 def try_elevenlabs():
-    print(f"Attempting ElevenLabs synthesis ({len(SCRIPT_TEXT)} characters)...")
+    print(f"Attempting ElevenLabs synthesis ({len(SCRIPT_TEXT)} characters, slower pacing)...")
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
     headers = {
         "Accept": "audio/mpeg",
@@ -47,9 +47,9 @@ def try_elevenlabs():
         "text": SCRIPT_TEXT,
         "model_id": "eleven_turbo_v2_5",
         "voice_settings": {
-            "stability": 0.52,
-            "similarity_boost": 0.82,
-            "speed": 1.05
+            "stability": 0.65,
+            "similarity_boost": 0.85,
+            "speed": 0.94  # slightly slower, relaxed, authoritative pitch cadence
         }
     }
     resp = requests.post(url, json=payload, headers=headers)
@@ -63,8 +63,8 @@ def try_elevenlabs():
         return False
 
 async def fallback_edge_tts():
-    print("Synthesizing with Edge-TTS (Christopher Neural, ultra-crisp pitch tone)...")
-    communicate = edge_tts.Communicate(SCRIPT_TEXT, "en-US-ChristopherNeural", rate="+6%", pitch="+0Hz")
+    print("Synthesizing with Edge-TTS (Christopher Neural, calm presentation tone)...")
+    communicate = edge_tts.Communicate(SCRIPT_TEXT, "en-US-ChristopherNeural", rate="-4%", pitch="+0Hz")
     await communicate.save(OUTPUT_VOICE)
     print(f"Edge-TTS synthesis succeeded! Saved to {OUTPUT_VOICE}")
 
