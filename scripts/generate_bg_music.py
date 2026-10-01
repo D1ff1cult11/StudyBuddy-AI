@@ -3,7 +3,7 @@ from scipy.io import wavfile
 import os
 
 SAMPLE_RATE = 44100
-DURATION = 57.0  # seconds
+DURATION = 92.0  # seconds (matches 1:30 min video)
 TOTAL_SAMPLES = int(SAMPLE_RATE * DURATION)
 
 def note_freq(note_name):
