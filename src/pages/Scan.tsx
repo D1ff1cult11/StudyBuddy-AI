@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Camera, Loader2, CheckCircle2, ArrowRight, FileText, Upload, Sparkles, ShieldCheck, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { studyAgent, type Flashcard } from '../utils/ai-agent';
 import { sound } from '../utils/audio';
+import { checkProStatus } from '../utils/revenuecat';
 
 const SAMPLE_NOTES = [
   {
@@ -30,6 +31,13 @@ export function Scan() {
   const [generatedCards, setGeneratedCards] = useState<Flashcard[]>([]);
   const [mode, setMode] = useState<'camera' | 'paste'>('camera');
   const [statusMessage, setStatusMessage] = useState('Extracting key concepts...');
+  const [isPro, setIsPro] = useState(false);
+  const [scansUsed, setScansUsed] = useState(0);
+
+  useEffect(() => {
+    checkProStatus().then(status => setIsPro(status.isActive));
+    setScansUsed(parseInt(localStorage.getItem('studybuddy_scans_used') || '0', 10));
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -55,6 +63,15 @@ export function Scan() {
       return;
     }
 
+    const status = await checkProStatus();
+    const used = parseInt(localStorage.getItem('studybuddy_scans_used') || '0', 10);
+    if (!status.isActive && used >= 3) {
+      sound.playFlip();
+      alert('Free tier limit reached (3/3 scans used). Unlock unlimited scans with StudyBuddy Pro!');
+      navigate('/paywall');
+      return;
+    }
+
     sound.playFlip();
     setStep('scanning');
 
@@ -74,6 +91,12 @@ export function Scan() {
             { text: textToProcess },
             textToProcess.slice(0, 20) + "..."
           );
+        }
+
+        if (!status.isActive) {
+          const newUsed = used + 1;
+          localStorage.setItem('studybuddy_scans_used', String(newUsed));
+          setScansUsed(newUsed);
         }
 
         setGeneratedCards(cards);
@@ -96,9 +119,26 @@ export function Scan() {
     <div className="animate-slide-up" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <header style={{ marginBottom: '1.25rem', textAlign: 'center' }}>
         <h2 style={{ fontSize: '1.5rem', letterSpacing: '-0.02em' }}>Scan & Synthesize</h2>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.25rem', padding: '0.2rem 0.6rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '1rem', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-          <ShieldCheck size={13} color="#10b981" />
-          <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 600 }}>PII Scrubbing Shield Active</span>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem', marginTop: '0.35rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.2rem 0.6rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '1rem', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+            <ShieldCheck size={13} color="#10b981" />
+            <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 600 }}>PII Shield Active</span>
+          </div>
+          <div 
+            onClick={() => !isPro && navigate('/paywall')}
+            style={{ 
+              display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.2rem 0.6rem', 
+              background: isPro ? 'rgba(16, 185, 129, 0.1)' : 'rgba(217, 70, 239, 0.12)', 
+              borderRadius: '1rem', 
+              border: isPro ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(217, 70, 239, 0.25)',
+              cursor: isPro ? 'default' : 'pointer'
+            }}
+          >
+            <Sparkles size={12} color={isPro ? '#10b981' : 'var(--accent-secondary)'} />
+            <span style={{ fontSize: '0.72rem', color: isPro ? '#10b981' : 'var(--accent-secondary)', fontWeight: 600 }}>
+              {isPro ? 'Pro: Unlimited' : `Free: ${Math.max(0, 3 - scansUsed)}/3 Scans`}
+            </span>
+          </div>
         </div>
       </header>
 

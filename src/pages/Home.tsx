@@ -1,7 +1,8 @@
-import { Sparkles, Brain, BookOpen, ChevronRight, Zap, Clock, Volume2, VolumeX, Flame, GraduationCap } from 'lucide-react';
+import { Sparkles, Brain, BookOpen, ChevronRight, Zap, Clock, Volume2, VolumeX, Flame, GraduationCap, Crown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { loadReviews, getDueCards } from '../utils/spaced-repetition';
+import { checkProStatus } from '../utils/revenuecat';
 import { sound } from '../utils/audio';
 
 export function Home() {
@@ -11,8 +12,10 @@ export function Home() {
   const [masteredCount, setMasteredCount] = useState(248);
   const [recentDecks, setRecentDecks] = useState<any[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(sound.isEnabled());
+  const [isPro, setIsPro] = useState(false);
 
   useEffect(() => {
+    checkProStatus().then(status => setIsPro(status.isActive));
     const decks = JSON.parse(localStorage.getItem('study_decks') || '[]');
     setDeckCount(decks.length);
 
@@ -88,7 +91,9 @@ export function Home() {
           <button 
             onClick={() => navigate('/paywall')}
             style={{ 
-              background: 'var(--accent-gradient)', 
+              background: isPro 
+                ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' 
+                : 'var(--accent-gradient)', 
               border: 'none', 
               borderRadius: '2rem', 
               padding: '0.45rem 0.9rem', 
@@ -100,12 +105,15 @@ export function Home() {
               alignItems: 'center', 
               gap: '0.35rem',
               cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(217, 70, 239, 0.35)',
+              boxShadow: isPro 
+                ? '0 4px 16px rgba(16, 185, 129, 0.35)' 
+                : '0 4px 16px rgba(217, 70, 239, 0.35)',
               transition: 'all 0.15s',
               letterSpacing: '0.02em'
             }}
           >
-            <Zap size={14} /> PRO
+            {isPro ? <Crown size={14} color="#ffd700" /> : <Zap size={14} />}
+            {isPro ? 'PRO ACTIVE' : 'UPGRADE'}
           </button>
         </div>
       </header>
