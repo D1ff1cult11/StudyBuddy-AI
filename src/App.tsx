@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { initRevenueCat } from './utils/revenuecat';
+import { initSupabaseRealtime } from './utils/supabase-realtime';
 import { BottomNav } from './components/BottomNav';
 import { Onboarding } from './components/Onboarding';
 import { Home } from './pages/Home';
@@ -38,6 +40,12 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(
     () => !localStorage.getItem('onboarding_complete')
   );
+
+  useEffect(() => {
+    // Initialize RevenueCat Web SDK and Supabase Realtime Presence
+    initRevenueCat().catch(console.error);
+    initSupabaseRealtime();
+  }, []);
 
   if (showOnboarding) {
     return <Onboarding onComplete={() => setShowOnboarding(false)} />;

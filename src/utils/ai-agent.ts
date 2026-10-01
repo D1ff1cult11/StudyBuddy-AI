@@ -30,10 +30,10 @@ export class AIAgentHarness {
     let sanitized = text;
     // Redact Emails
     sanitized = sanitized.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[REDACTED_EMAIL]');
-    // Redact Phone Numbers (international & US formats)
-    sanitized = sanitized.replace(/(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}\b/g, '[REDACTED_PHONE]');
-    // Redact SSN-like numbers
+    // Redact SSN-like numbers first
     sanitized = sanitized.replace(/\b\d{3}-\d{2}-\d{4}\b/g, '[REDACTED_SSN]');
+    // Redact Phone Numbers (India +91 10-digit, US (555), and international formats)
+    sanitized = sanitized.replace(/(?:\+?\d{1,3}[-.\s]*)?(?:\(?\d{3}\)?[-.\s]*)?\d{3,5}[-.\s]?\d{4,5}\b/g, '[REDACTED_PHONE]');
     return sanitized;
   }
 

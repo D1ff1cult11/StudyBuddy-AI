@@ -1,22 +1,83 @@
-import { useState } from 'react';
-import { Crown, CheckCircle2, Zap, ChevronLeft, Shield, Infinity, Brain } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Crown, CheckCircle2, Zap, ChevronLeft, Shield, Infinity, Brain, RotateCcw, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { purchasePackage, restorePurchases, checkProStatus, isRealMode } from '../utils/revenuecat';
+import { sound } from '../utils/audio';
 
 export function Paywall({ onClose }: { onClose?: () => void }) {
   const navigate = useNavigate();
+  const [selectedPlan, setSelectedPlan] = useState<'student' | 'annual'>('student');
   const [loading, setLoading] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+  const [isPro, setIsPro] = useState(false);
+  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
-  const handleSubscribe = () => {
+  useEffect(() => {
+    checkProStatus().then((status) => {
+      setIsPro(status.isActive);
+    });
+  }, []);
+
+  const handleSubscribe = async () => {
+    sound.playFlip();
     setLoading(true);
-    // Simulate RevenueCat SDK purchase flow
-    setTimeout(() => {
+    setFeedbackMsg(null);
+
+    try {
+      const pkg = {
+        identifier: selectedPlan === 'student' ? '$rc_student_annual' : '$rc_annual',
+        product: {
+          identifier: selectedPlan === 'student' ? 'studybuddy_student_annual' : 'studybuddy_pro_annual',
+          title: selectedPlan === 'student' ? 'Next Gen Student Pass (50% Off)' : 'StudyBuddy Pro Annual',
+          price: selectedPlan === 'student' ? 14.99 : 29.99,
+          currencyCode: 'USD',
+        },
+      };
+
+      const success = await purchasePackage(pkg);
+      if (success) {
+        sound.playSuccess();
+        setIsPro(true);
+        setFeedbackMsg('🎉 Pro Unlocked via RevenueCat! Unlimited AI scans & SM-2 analytics active.');
+        setTimeout(() => {
+          if (onClose) onClose();
+          else navigate('/');
+        }, 1200);
+      } else {
+        setFeedbackMsg('Transaction was cancelled or could not be processed.');
+      }
+    } catch (e) {
+      console.error('[Paywall] Subscribe error:', e);
+      setFeedbackMsg('Error connecting to RevenueCat billing service.');
+    } finally {
       setLoading(false);
-      if (onClose) onClose();
-      else navigate('/');
-    }, 1500);
+    }
+  };
+
+  const handleRestore = async () => {
+    sound.playFlip();
+    setRestoring(true);
+    setFeedbackMsg(null);
+
+    try {
+      const status = await restorePurchases();
+      if (status.isActive) {
+        sound.playSuccess();
+        setIsPro(true);
+        setFeedbackMsg('✅ Previous Pro subscription restored successfully!');
+      } else {
+        setFeedbackMsg('No active subscription found to restore.');
+      }
+    } catch (e) {
+      console.error('[Paywall] Restore error:', e);
+      setFeedbackMsg('Unable to reach restore endpoint.');
+    } finally {
+      setRestoring(false);
+    }
   };
 
   const handleBack = () => {
+    sound.playFlip();
     if (onClose) onClose();
     else navigate(-1);
   };
@@ -30,13 +91,13 @@ export function Paywall({ onClose }: { onClose?: () => void }) {
     }}>
       {/* Hero */}
       <div style={{ 
-        position: 'relative', height: '36vh', 
+        position: 'relative', height: '32vh', 
         background: 'var(--accent-gradient)', 
         display: 'flex', alignItems: 'center', justifyContent: 'center', 
         overflow: 'hidden' 
       }}>
         <div style={{ position: 'absolute', inset: 0, opacity: 0.15, backgroundImage: 'radial-gradient(circle at 20px 20px, white 1.5px, transparent 0)', backgroundSize: '36px 36px' }} />
-        <Crown size={72} color="white" className="animate-float" style={{ filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.35))' }} />
+        <Crown size={64} color="white" className="animate-float" style={{ filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.35))' }} />
         
         {/* Back button */}
         <button 
@@ -55,58 +116,155 @@ export function Paywall({ onClose }: { onClose?: () => void }) {
 
       {/* Content */}
       <div style={{ 
-        flex: 1, padding: '1.75rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', 
+        flex: 1, padding: '1.75rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1.1rem', 
         background: 'var(--bg-secondary)', 
         borderTopLeftRadius: 'var(--radius-xl)', borderTopRightRadius: 'var(--radius-xl)', 
         marginTop: '-1.5rem', zIndex: 2 
       }}>
         <div style={{ textAlign: 'center' }}>
-          <h2 style={{ fontSize: '1.75rem', marginBottom: '0.4rem' }}>StudyBuddy <span className="text-gradient">Pro</span></h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Unlock unlimited AI scans and advanced analytics.</p>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.2rem 0.6rem', background: 'rgba(217, 70, 239, 0.12)', borderRadius: '1rem', marginBottom: '0.5rem', border: '1px solid rgba(217, 70, 239, 0.25)' }}>
+            <Zap size={12} color="var(--accent-secondary)" />
+            <span style={{ fontSize: '0.72rem', color: 'var(--accent-secondary)', fontWeight: 700 }}>
+              REVENUECAT {isRealMode() ? 'LIVE' : 'SANDBOX'} ENGINE
+            </span>
+          </div>
+          <h2 style={{ fontSize: '1.65rem', marginBottom: '0.3rem', letterSpacing: '-0.02em' }}>StudyBuddy <span className="text-gradient">Pro</span></h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
+            Empowering students worldwide with science-backed retention.
+          </p>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginTop: '0.5rem' }}>
+        {feedbackMsg && (
+          <div style={{ 
+            padding: '0.75rem 1rem', 
+            borderRadius: '0.75rem', 
+            background: feedbackMsg.includes('🎉') || feedbackMsg.includes('✅') ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', 
+            border: `1px solid ${feedbackMsg.includes('🎉') || feedbackMsg.includes('✅') ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+            fontSize: '0.85rem',
+            textAlign: 'center',
+            color: 'var(--text-primary)'
+          }}>
+            {feedbackMsg}
+          </div>
+        )}
+
+        {/* Value Prop List */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.25rem' }}>
           {[
-            { icon: Infinity, text: 'Unlimited AI Note Scanning' },
-            { icon: Brain, text: 'Spaced Repetition Analytics' },
-            { icon: Shield, text: 'Export to PDF & Notion' },
-            { icon: Zap, text: 'Priority AI Processing' },
+            { icon: Infinity, text: 'Unlimited Gemini Flash multimodal OCR note scans' },
+            { icon: Brain, text: 'Full SuperMemo SM-2 memory retention engine' },
+            { icon: Shield, text: 'Client-side PII scrubbing before any cloud AI call' },
+            { icon: GraduationCap, text: 'LMS Canvas & Blackboard two-way sync' },
           ].map((feature, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div style={{ 
                 padding: '0.4rem', borderRadius: '0.5rem', 
-                background: 'rgba(139, 92, 246, 0.08)'
+                background: 'rgba(139, 92, 246, 0.12)'
               }}>
-                <CheckCircle2 size={20} color="var(--accent-primary)" />
+                <CheckCircle2 size={18} color="var(--accent-primary)" />
               </div>
-              <span style={{ fontSize: '1rem', fontWeight: 500 }}>{feature.text}</span>
+              <span style={{ fontSize: '0.92rem', fontWeight: 500 }}>{feature.text}</span>
             </div>
           ))}
         </div>
 
-        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {/* Pricing card */}
-          <div className="glass-panel" style={{ 
-            padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-            border: '2px solid rgba(139, 92, 246, 0.3)' 
-          }}>
+        {/* Pricing Selection */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+          
+          {/* Plan 1: Next Gen Student Tier */}
+          <div 
+            onClick={() => { setSelectedPlan('student'); sound.playFlip(); }}
+            className="glass-panel" 
+            style={{ 
+              padding: '0.9rem 1.15rem', 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              cursor: 'pointer',
+              border: selectedPlan === 'student' ? '2px solid var(--accent-secondary)' : '1px solid rgba(255, 255, 255, 0.08)',
+              background: selectedPlan === 'student' ? 'rgba(217, 70, 239, 0.08)' : 'var(--bg-glass)',
+              transition: 'all 0.15s'
+            }}
+          >
             <div>
-              <p style={{ fontWeight: 700, fontSize: '1.05rem' }}>Annual Plan</p>
-              <p style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 600 }}>7-Day Free Trial</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>Next Gen Student Pass</span>
+                <span style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem', borderRadius: '1rem', background: 'var(--accent-secondary)', color: 'white', fontWeight: 800 }}>50% OFF</span>
+              </div>
+              <p style={{ fontSize: '0.75rem', color: 'var(--accent-secondary)', fontWeight: 600, marginTop: '0.15rem' }}>
+                For students (19yo, undergrads, India & Global PPP)
+              </p>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontWeight: 800, fontSize: '1.35rem', letterSpacing: '-0.02em' }}>$29.99</p>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>/year</p>
+              <p style={{ fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em' }}>$14.99</p>
+              <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>/year (or ₹999)</p>
             </div>
           </div>
 
-          <button className="btn-primary" style={{ width: '100%', padding: '1.1rem' }} onClick={handleSubscribe}>
-            {loading ? <Zap className="animate-pulse" size={20} /> : <Crown size={18} />}
-            {loading ? 'Processing via RevenueCat...' : 'Start Free Trial'}
+          {/* Plan 2: Standard Annual Pro */}
+          <div 
+            onClick={() => { setSelectedPlan('annual'); sound.playFlip(); }}
+            className="glass-panel" 
+            style={{ 
+              padding: '0.9rem 1.15rem', 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              cursor: 'pointer',
+              border: selectedPlan === 'annual' ? '2px solid var(--accent-primary)' : '1px solid rgba(255, 255, 255, 0.08)',
+              background: selectedPlan === 'annual' ? 'rgba(139, 92, 246, 0.08)' : 'var(--bg-glass)',
+              transition: 'all 0.15s'
+            }}
+          >
+            <div>
+              <p style={{ fontWeight: 700, fontSize: '0.95rem' }}>Standard Pro Annual</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', fontWeight: 600, marginTop: '0.15rem' }}>
+                7-Day Free Trial included
+              </p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em' }}>$29.99</p>
+              <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>/year</p>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA Button */}
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          <button 
+            className="btn-primary" 
+            style={{ width: '100%', padding: '1rem', fontSize: '1rem' }} 
+            onClick={handleSubscribe}
+            disabled={loading || restoring}
+          >
+            {loading ? <Zap className="animate-pulse" size={18} /> : <Crown size={18} />}
+            {loading ? 'Routing to RevenueCat SDK...' : (isPro ? 'Pro Active (Renew / Switch)' : 'Start 7-Day Free Trial')}
           </button>
+
+          {/* Restore Purchases */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.4rem', marginTop: '0.2rem' }}>
+            <button 
+              onClick={handleRestore}
+              disabled={restoring || loading}
+              style={{ 
+                background: 'none', 
+                border: 'none', 
+                color: 'var(--text-secondary)', 
+                fontSize: '0.78rem', 
+                cursor: 'pointer', 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '0.3rem',
+                textDecoration: 'underline'
+              }}
+            >
+              <RotateCcw size={12} />
+              {restoring ? 'Verifying with RevenueCat...' : 'Restore Purchases'}
+            </button>
+          </div>
           
-          <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-            Cancel anytime · Powered by RevenueCat · No commitment
+          <p style={{ textAlign: 'center', fontSize: '0.68rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+            Entitlement: pro · Powered by @revenuecat/purchases-js · Cancel anytime
           </p>
         </div>
       </div>
