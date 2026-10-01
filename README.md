@@ -18,6 +18,7 @@
 </p>
 
 <p align="center">
+  <a href="https://study-buddy-ilxzqp4f0-udayrajsinh-valas-projects.vercel.app/"><strong>🌐 Live Production App</strong></a> •
   <a href="#-the-mission--next-gen-story">The Story</a> •
   <a href="#-10-production-modules">Features</a> •
   <a href="#-revenuecat-monetization-architecture">RevenueCat Architecture</a> •

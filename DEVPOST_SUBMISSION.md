@@ -133,6 +133,6 @@ React 19 · TypeScript · Vite · Vitest · RevenueCat (`@revenuecat/purchases-j
 
 - **Devpost Project Name**: StudyBuddy AI — Voice Tutor, SM-2 & RevenueCat Pro
 - **GitHub Repository**: https://github.com/D1ff1cult11/StudyBuddy-AI
-- **Live Demo Link**: https://studybuddy-ai.vercel.app/
+- **Live Demo Link**: https://study-buddy-ilxzqp4f0-udayrajsinh-valas-projects.vercel.app/
 - **Demo Video File**: `studybuddy_2min_pitch_master.mp4` (Duration: `00:01:54.96`, strictly under 2 min)
 - **Thumbnail Image**: `devpost_thumbnail_3x2.jpg` (included in project root)
