@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { GraduationCap, CheckCircle2, RefreshCw, UploadCloud, BookOpen, Layers, ShieldCheck, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { lmsService, type LMSCourse, type LMSAssignment } from '../utils/lms-integration';
@@ -8,14 +8,10 @@ import { launchConfetti } from '../utils/confetti';
 
 export function LMSHub() {
   const navigate = useNavigate();
-  const [courses, setCourses] = useState<LMSCourse[]>([]);
+  const [courses, setCourses] = useState<LMSCourse[]>(() => lmsService.getCourses());
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [gradingId, setGradingId] = useState<string | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
-
-  useEffect(() => {
-    setCourses(lmsService.getCourses());
-  }, []);
 
   const handleSyncToDeck = async (course: LMSCourse, assignment: LMSAssignment) => {
     setSyncingId(assignment.id);

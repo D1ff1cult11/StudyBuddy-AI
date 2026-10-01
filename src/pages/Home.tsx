@@ -5,45 +5,70 @@ import { loadReviews, getDueCards } from '../utils/spaced-repetition';
 import { checkProStatus } from '../utils/revenuecat';
 import { sound } from '../utils/audio';
 
+interface RecentDeck {
+  id: number;
+  title: string;
+  cards: number;
+  progress: number;
+}
+
 export function Home() {
   const navigate = useNavigate();
-  const [deckCount, setDeckCount] = useState(0);
-  const [dueCount, setDueCount] = useState(0);
-  const [masteredCount, setMasteredCount] = useState(248);
-  const [recentDecks, setRecentDecks] = useState<any[]>([]);
-  const [soundEnabled, setSoundEnabled] = useState(sound.isEnabled());
   const [isPro, setIsPro] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(sound.isEnabled());
+
+  const [deckCount] = useState(() => {
+    try {
+      const decks = JSON.parse(localStorage.getItem('study_decks') || '[]');
+      return decks.length;
+    } catch {
+      return 0;
+    }
+  });
+
+  const [dueCount] = useState(() => {
+    try {
+      const reviews = loadReviews();
+      const due = getDueCards(reviews);
+      return due.length > 0 ? due.length : 3;
+    } catch {
+      return 3;
+    }
+  });
+
+  const [masteredCount] = useState(() => {
+    try {
+      const reviews = loadReviews();
+      const mastered = reviews.filter(r => r.repetitions >= 3).length;
+      return mastered > 0 ? 248 + mastered : 248;
+    } catch {
+      return 248;
+    }
+  });
+
+  const [recentDecks] = useState<RecentDeck[]>(() => {
+    try {
+      const decks = JSON.parse(localStorage.getItem('study_decks') || '[]');
+      if (decks.length > 0) {
+        return decks.slice(-3).reverse().map((d: any) => ({
+          id: d.id,
+          title: d.title || 'Untitled Deck',
+          cards: d.cards?.length || 0,
+          progress: Math.min(100, Math.floor(Math.random() * 40 + 60))
+        }));
+      }
+    } catch {
+      // fallback
+    }
+    return [
+      { id: 1, title: 'Cell Biology & Mitochondria', cards: 4, progress: 85 },
+      { id: 2, title: 'World War I: Geopolitics', cards: 18, progress: 40 },
+      { id: 3, title: 'Quantum Physics: Photoelectric', cards: 12, progress: 25 },
+    ];
+  });
 
   useEffect(() => {
     checkProStatus().then(status => setIsPro(status.isActive));
-    const decks = JSON.parse(localStorage.getItem('study_decks') || '[]');
-    setDeckCount(decks.length);
-
-    // Calculate real spaced repetition stats
-    const reviews = loadReviews();
-    const due = getDueCards(reviews);
-    setDueCount(due.length > 0 ? due.length : 3); // Default to active cues
-
-    const mastered = reviews.filter(r => r.repetitions >= 3).length;
-    if (mastered > 0) {
-      setMasteredCount(248 + mastered);
-    }
-
-    if (decks.length > 0) {
-      const formatted = decks.slice(-3).reverse().map((d: any) => ({
-        id: d.id,
-        title: d.title || 'Untitled Deck',
-        cards: d.cards?.length || 0,
-        progress: Math.min(100, Math.floor(Math.random() * 40 + 60))
-      }));
-      setRecentDecks(formatted);
-    } else {
-      setRecentDecks([
-        { id: 1, title: 'Cell Biology & Mitochondria', cards: 4, progress: 85 },
-        { id: 2, title: 'World War I: Geopolitics', cards: 18, progress: 40 },
-        { id: 3, title: 'Quantum Physics: Photoelectric', cards: 12, progress: 25 },
-      ]);
-    }
   }, []);
 
   const handleSoundToggle = () => {

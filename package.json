@@ -1,7 +1,10 @@
 {
-  "name": "ship-a-ton",
+  "name": "studybuddy-ai",
+  "version": "1.0.0",
+  "description": "AI-powered study operating system with RevenueCat Pro monetization, Gemini Live voice tutoring, and SuperMemo SM-2 spaced repetition",
+  "author": "StudyBuddy AI Team",
+  "license": "MIT",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

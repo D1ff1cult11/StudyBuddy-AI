@@ -1,6 +1,6 @@
 # 🏆 StudyBuddy AI — Official Devpost Submission Package
 > **Target Track: Next Gen Award ($25,000 + NYC Trip + Times Square Billboard)**  
-> **Status: 100% Production Ready · 32 Tests Passing · RevenueCat SDK Integrated**
+> **Status: 100% Production Ready · 36 Tests Passing · RevenueCat SDK Integrated**
 
 ---
 
@@ -29,7 +29,7 @@ Winning the **Next Gen Award** would be a defining milestone: taking a 19-year-o
 1. **Authentic Founder-Problem Fit**: Built by a 19-year-old living the problem daily in one of the most competitive student ecosystems in the world.
 2. **First-Class RevenueCat Monetization**: Not a simulated placeholder. We integrated the real `@revenuecat/purchases-js` SDK with entitlement gating (`pro`), a dedicated **50% Off Next Gen Student Pass (₹999/yr in India vs $29.99/yr globally)** powered by Purchasing Power Parity, customer demographic cohort tracking, and Restore Purchases.
 3. **True Learning Science (SM-2)**: Features a mathematically verified implementation of the SuperMemo SM-2 spaced repetition algorithm, backed by a 14-test Vitest suite ensuring Ease Factors ($EF \ge 1.3$) and intervals scale accurately.
-4. **Uncompromising Engineering Rigor**: **32 automated unit tests** passing in Vitest, 0 TypeScript compile errors, client-side PII scrubbing for Indian and international student notes, and 0ms-latency procedural audio synthesized via Web Audio math.
+4. **Uncompromising Engineering Rigor**: **36 automated unit tests** across 5 test suites passing in Vitest, 0 TypeScript compile errors, 0 linter warnings (`oxlint`), client-side PII scrubbing for Indian and international student notes, and 0ms-latency procedural audio synthesized via Web Audio math.
 
 ---
 
@@ -101,7 +101,7 @@ Monetization is the lifeblood of sustainable software. StudyBuddy AI integrates 
 
 ## 🌟 Accomplishments We're Proud Of
 
-- **32 / 32 Unit Tests Passing** with 100% build pass rate on Vite & TypeScript.
+- **36 / 36 Unit Tests Passing** across 5 test suites with 100% build pass rate on Vite & TypeScript.
 - **End-to-End Real SDKs**: Real RevenueCat Web SDK integration + Supabase Realtime presence.
 - **19-Year-Old Founder Vision**: Built directly out of the lived experience of college exam pressure in India, designed with localized pricing and ethical offline-first privacy.
 - **Zero-Latency Procedural Audio**: Designed a zero-asset sound design engine using pure mathematical sine/triangle oscillators.

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Crown, CheckCircle2, Zap, ChevronLeft, Shield, Infinity, Brain, RotateCcw, GraduationCap } from 'lucide-react';
+import { Crown, CheckCircle2, Zap, ChevronLeft, Shield, Infinity as InfinityIcon, Brain, RotateCcw, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { purchasePackage, restorePurchases, checkProStatus, isRealMode, setStudentAttributes } from '../utils/revenuecat';
 import { sound } from '../utils/audio';
@@ -160,7 +160,7 @@ export function Paywall({ onClose }: { onClose?: () => void }) {
         {/* Value Prop List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.25rem' }}>
           {[
-            { icon: Infinity, text: 'Unlimited Gemini Flash multimodal OCR note scans' },
+            { icon: InfinityIcon, text: 'Unlimited Gemini Flash multimodal OCR note scans' },
             { icon: Brain, text: 'Full SuperMemo SM-2 memory retention engine' },
             { icon: Shield, text: 'Client-side PII scrubbing before any cloud AI call' },
             { icon: GraduationCap, text: 'LMS Canvas & Blackboard two-way sync' },

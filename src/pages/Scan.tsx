@@ -32,11 +32,16 @@ export function Scan() {
   const [mode, setMode] = useState<'camera' | 'paste'>('camera');
   const [statusMessage, setStatusMessage] = useState('Extracting key concepts...');
   const [isPro, setIsPro] = useState(false);
-  const [scansUsed, setScansUsed] = useState(0);
+  const [scansUsed, setScansUsed] = useState(() => {
+    try {
+      return parseInt(localStorage.getItem('studybuddy_scans_used') || '0', 10);
+    } catch {
+      return 0;
+    }
+  });
 
   useEffect(() => {
     checkProStatus().then(status => setIsPro(status.isActive));
-    setScansUsed(parseInt(localStorage.getItem('studybuddy_scans_used') || '0', 10));
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

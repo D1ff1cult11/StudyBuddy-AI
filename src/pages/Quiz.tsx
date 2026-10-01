@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CheckCircle2, XCircle, ArrowRight, RotateCcw, BrainCircuit, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { launchConfetti } from '../utils/confetti';
@@ -19,12 +19,7 @@ export function Quiz() {
   const [finished, setFinished] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    generateQuiz();
-  }, []);
-
-  const generateQuiz = async () => {
-    setLoading(true);
+  const generateQuiz = useCallback(async () => {
     const apiKey = import.meta.env.VITE_AI_API_KEY;
     
     // Get text from latest deck or use defaults
@@ -69,7 +64,14 @@ export function Quiz() {
       { question: "What carries amino acids during translation?", options: ["mRNA", "rRNA", "tRNA", "DNA"], correctIndex: 2 },
     ]);
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      generateQuiz();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [generateQuiz]);
 
   const handleSelect = (index: number) => {
     if (selected !== null) return;

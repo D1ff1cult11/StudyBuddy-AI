@@ -8,12 +8,22 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Tests-32%20Passing-brightgreen?style=for-the-badge&logo=vitest" alt="Vitest Tests" />
+  <img src="https://github.com/D1ff1cult11/StudyBuddy-AI/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
+  <img src="https://img.shields.io/badge/Tests-36%20Passing-brightgreen?style=for-the-badge&logo=vitest" alt="Vitest Tests" />
   <img src="https://img.shields.io/badge/RevenueCat-SDK%20v1.67-orange?style=for-the-badge&logo=revenuecat" alt="RevenueCat" />
   <img src="https://img.shields.io/badge/React%2019-Vite%208-blue?style=for-the-badge&logo=react" alt="React 19" />
   <img src="https://img.shields.io/badge/TypeScript-Strict-blue?style=for-the-badge&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Gemini%201.5-Multimodal%20Vision-purple?style=for-the-badge&logo=googlebard" alt="Gemini" />
   <img src="https://img.shields.io/badge/Capacitor%208-iOS%20%26%20Android-green?style=for-the-badge&logo=capacitor" alt="Capacitor" />
+</p>
+
+<p align="center">
+  <a href="#-the-mission--next-gen-story">The Story</a> •
+  <a href="#-10-production-modules">Features</a> •
+  <a href="#-revenuecat-monetization-architecture">RevenueCat Architecture</a> •
+  <a href="#-rigorous-automated-testing-32--32-passing">Testing</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="./DEVPOST_SUBMISSION.md">Devpost Pitch Copy</a>
 </p>
 
 ---
@@ -41,7 +51,26 @@ As a **19-year-old student developer from India**, college life means managing m
 
 ---
 
-## 🧪 Rigorous Automated Testing (32 / 32 Passing)
+## 💳 RevenueCat Monetization Architecture
+
+StudyBuddy AI implements sustainable, student-first monetization with `@revenuecat/purchases-js` (Web SDK v1.67):
+
+- **Entitlement Gating**: Real-time entitlement validation for `'pro'` status (`checkProStatus()`) cached client-side with instantaneous UI reactivity across all routes (`Home`, `Scan`, `Study`).
+- **Dynamic Offerings & Student Pricing**:
+  - **Next Gen Student Pass (PPP Tier)**: `₹999/year` (~$11.99/yr) — 50% discount tailored specifically for students in developing nations (India Purchasing Power Parity).
+  - **Annual Pro**: `$29.99/year` ($2.49/mo) — Full unlimited access globally.
+  - **Monthly Pro**: `$4.99/month` — Flexible monthly billing.
+- **Customer Demographic Attribution**:
+  - `Purchases.setAttributes()` tracks student cohorts: `country: 'India'`, `age: '19'`, `cohort: 'NextGen2026'`, `student_status: 'verified'`.
+- **Freemium Limits & Conversion Hooks**:
+  - Free users receive 3 full multimodal scans and 1 AI quiz daily.
+  - On the 4th scan attempt, the RevenueCat paywall is smoothly triggered with an interactive Free vs. Pro comparison drawer.
+- **Graceful Zero-Cost Fallback**:
+  - When running without a live public API key (`test_` / unconfigured), the SDK operates in an offline mock mode that reproduces real package structures, entitlements, and restore flows without breaking local development or testing.
+
+---
+
+## 🧪 Rigorous Automated Testing (36 / 36 Passing)
 
 StudyBuddy AI follows strict Test-Driven Development (TDD) principles:
 
@@ -54,9 +83,10 @@ npm test
 ✓ src/__tests__/ai-agent.test.ts           (7 tests)   — PII regex scrubbing & immutability
 ✓ src/__tests__/revenuecat.test.ts         (7 tests)   — Entitlements, offerings & fallbacks
 ✓ src/__tests__/supabase-realtime.test.ts  (4 tests)   — Realtime presence & broadcast
+✓ src/__tests__/cn.test.ts                 (4 tests)   — Tailwind merge & dynamic class assertions
 ========================================================================================
-Test Files  4 passed (4)
-Tests       32 passed (32)
+Test Files  5 passed (5)
+Tests       36 passed (36)
 ```
 
 ---

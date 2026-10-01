@@ -1,6 +1,6 @@
 import { BookOpen, Plus, Trash2, Download, Copy, Check, Play, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { sound } from '../utils/audio';
 
 interface Deck {
@@ -12,13 +12,14 @@ interface Deck {
 
 export function Library() {
   const navigate = useNavigate();
-  const [decks, setDecks] = useState<Deck[]>([]);
+  const [decks, setDecks] = useState<Deck[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('study_decks') || '[]');
+    } catch {
+      return [];
+    }
+  });
   const [copiedId, setCopiedId] = useState<number | null>(null);
-
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('study_decks') || '[]');
-    setDecks(stored);
-  }, []);
 
   const handleDelete = (id: number) => {
     const updated = decks.filter(d => d.id !== id);

@@ -1,11 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { Home, Camera, Library, Trophy } from 'lucide-react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from '../utils/cn';
 
 export function BottomNav() {
   return (

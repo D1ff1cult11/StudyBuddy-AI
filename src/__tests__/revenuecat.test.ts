@@ -61,9 +61,10 @@ describe('RevenueCat SDK Integration', () => {
     expect(offerings?.current?.availablePackages.length).toBeGreaterThan(0);
 
     const firstPkg = offerings?.current?.availablePackages[0];
-    expect(firstPkg?.identifier).toBe('$rc_annual');
-    expect((firstPkg?.product as any).price).toBe(29.99);
-    expect((firstPkg?.product as any).currencyCode).toBe('USD');
+    expect(firstPkg).toBeDefined();
+    expect(firstPkg!.identifier).toBe('$rc_annual');
+    expect((firstPkg!.product as any).price).toBe(29.99);
+    expect((firstPkg!.product as any).currencyCode).toBe('USD');
   });
 
   it('purchasePackage handles purchase simulation and stores Pro entitlement', async () => {
