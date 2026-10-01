@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { CheckCircle2, XCircle, ArrowRight, RotateCcw, BrainCircuit } from 'lucide-react';
+import { CheckCircle2, XCircle, ArrowRight, RotateCcw, BrainCircuit, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { launchConfetti } from '../utils/confetti';
+import { sound } from '../utils/audio';
 
 interface QuizQuestion {
   question: string;
@@ -75,13 +76,18 @@ export function Quiz() {
     setSelected(index);
     if (index === questions[current].correctIndex) {
       setScore(s => s + 1);
+      sound.playSuccess();
+    } else {
+      sound.playAgain();
     }
   };
 
   const handleNext = () => {
+    sound.playFlip();
     if (current === questions.length - 1) {
       setFinished(true);
       if (score >= questions.length * 0.8) {
+        sound.playFanfare();
         launchConfetti();
       }
     } else {
@@ -136,8 +142,16 @@ export function Quiz() {
 
   return (
     <div className="animate-slide-up" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* Top Header Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
+        <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '2px' }}>
+          <ChevronLeft size={22} />
+        </button>
+        <span style={{ fontSize: '0.92rem', fontWeight: 700 }}>AI Diagnostic Quiz</span>
+      </div>
+
       {/* Progress */}
-      <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ marginBottom: '1.25rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Question {current + 1}/{questions.length}</span>
           <span style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 700 }}>Score: {score}</span>

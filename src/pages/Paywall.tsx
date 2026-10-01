@@ -23,9 +23,10 @@ export function Paywall({ onClose }: { onClose?: () => void }) {
 
   return (
     <div className="animate-slide-up" style={{ 
-      position: 'fixed', inset: 0, zIndex: 100, 
+      position: 'absolute', inset: 0, zIndex: 100, 
       background: 'var(--bg-primary)', 
-      display: 'flex', flexDirection: 'column' 
+      display: 'flex', flexDirection: 'column',
+      overflowY: 'auto'
     }}>
       {/* Hero */}
       <div style={{ 

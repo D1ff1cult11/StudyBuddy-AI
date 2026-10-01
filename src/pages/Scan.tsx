@@ -176,6 +176,30 @@ export function Scan() {
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
                       Multimodal Gemini 1.5 reads cursive, diagrams & print
                     </p>
+                    {imagePreview && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setImagePreview(null);
+                          setImagePayload(null);
+                          if (fileInputRef.current) fileInputRef.current.value = '';
+                        }}
+                        style={{
+                          marginTop: '0.5rem',
+                          background: 'rgba(239, 68, 68, 0.15)',
+                          border: '1px solid rgba(239, 68, 68, 0.3)',
+                          color: '#ef4444',
+                          padding: '0.25rem 0.75rem',
+                          borderRadius: '1rem',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          fontFamily: 'Outfit, sans-serif'
+                        }}
+                      >
+                        Remove Photo
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
